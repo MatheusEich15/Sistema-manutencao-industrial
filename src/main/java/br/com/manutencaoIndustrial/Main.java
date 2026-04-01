@@ -60,7 +60,7 @@ public class Main {
                     break;
                 }
                 case 6: {
-                    //executarManutencao();
+                    executarManutencao();
                     break;
                 }
                 case 0: {
@@ -385,7 +385,7 @@ public class Main {
                     switch (confirma) {
                         case 1: {
                             ORDEMMANUTENCAODAO.criarOrdemManutencao(ordemManutencao);
-                            MAQUINADAO.alterarStatus(idMaquina);
+                            MAQUINADAO.alterarStatusManutencao(idMaquina);
                             System.out.println("Ordem de manutenção criada com sucesso!");
                             break;
                         }
@@ -567,7 +567,68 @@ public class Main {
         int opcao = SC.nextInt();
         switch (opcao) {
             case 1: {
-
+                boolean idOrdemCorreto = false;
+                int idOrdem = 0;
+                int idMaquina = 0;
+                int idTecnico = 0;
+                LocalDate dataSolicitacao = null;
+                do {
+                    try {
+                        ordemManutencaos = ORDEMMANUTENCAODAO.listarOrdemManutencaos();
+                    } catch (SQLException e) {
+                        System.out.println("Erro ao conectar com o banco de dados!");
+                        e.printStackTrace();
+                    }
+                    for (OrdemManutencao ordemManutencao : ordemManutencaos) {
+                        System.out.println(ordemManutencao.toString());
+                    }
+                    System.out.println("Insira o ID da manutenção que será realizada: ");
+                    idOrdem = SC.nextInt();
+                    for (OrdemManutencao ordemManutencao : ordemManutencaos) {
+                        if (ordemManutencao.getId() == idOrdem) {
+                            idOrdemCorreto = true;
+                            idMaquina = ordemManutencao.getIdMaquina();
+                            idTecnico = ordemManutencao.getIdTecnico();
+                            dataSolicitacao = ordemManutencao.getDataSolicitacao();
+                            break;
+                        }
+                    }
+                    if (!idOrdemCorreto) {
+                        System.out.println("Este ID não existe!");
+                    }
+                } while (!idOrdemCorreto);
+                try {
+                    System.out.println(
+                            "\nID ORDEM MANUTENÇÃO: " + idOrdem +
+                                    "\nID MÁQUINA: " + idMaquina +
+                                    "\nID TÉCNICO: " + idTecnico +
+                                    "\nDATA SOLICITAÇÃO: " + dataSolicitacao +
+                                    "\n<>------------------<>\n" +
+                                    "\nTem certeza que deseja executar esta manutenção?" +
+                                    "\n1 - SIM" +
+                                    "\n2 - NÃO"
+                    );
+                    int confirma = SC.nextInt();
+                    switch (confirma) {
+                        case 1: {
+                            ORDEMMANUTENCAODAO.alterarStatus(idOrdem);
+                            MAQUINADAO.alterarStatusOperacional(idMaquina);
+                            System.out.println("Manutenção executada com sucesso!!\n");
+                            break;
+                        }
+                        case 2: {
+                            System.out.println("Retornando ao menu...");
+                            return;
+                        }
+                        default: {
+                            System.out.println("ERRO!!!");
+                            break;
+                        }
+                    }
+                } catch (SQLException e) {
+                    System.out.println("Erro ao conectar com o banco de dados!");
+                    e.printStackTrace();
+                }
             }
             case 2: {
                 System.out.println("Retornando ao menu...");

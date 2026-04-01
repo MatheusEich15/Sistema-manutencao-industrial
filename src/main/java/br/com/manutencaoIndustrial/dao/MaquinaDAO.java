@@ -69,10 +69,24 @@ public class MaquinaDAO {
         return maquinas;
     }
 
-    public void alterarStatus(int idMaquina) throws SQLException {
+    public void alterarStatusManutencao(int idMaquina) throws SQLException {
         String command = """
                 UPDATE Maquina
                 SET status = 'Em manutenção'
+                WHERE id = ?
+                """;
+        try (Connection conn = Conexao.conectar()) {
+            PreparedStatement stmt = conn.prepareStatement(command);
+            stmt.setInt(1, idMaquina);
+
+            stmt.executeUpdate();
+        }
+    }
+
+    public void alterarStatusOperacional(int idMaquina) throws SQLException {
+        String command = """
+                UPDATE Maquina
+                SET status = 'Operacional'
                 WHERE id = ?
                 """;
         try (Connection conn = Conexao.conectar()) {

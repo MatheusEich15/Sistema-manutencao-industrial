@@ -50,4 +50,17 @@ public class OrdemManutencaoDAO {
         }
         return ordemManutencaos;
     }
+
+    public void alterarStatus(int idOrdem) throws SQLException{
+        String command = """
+               UPDATE OrdemManutencao
+               SET status = 'Executada'
+               WHERE id = ?
+               """;
+        try (Connection conn = Conexao.conectar()) {
+            PreparedStatement stmt = conn.prepareStatement(command);
+            stmt.setInt(1, idOrdem);
+            stmt.executeUpdate();
+        }
+    }
 }
